@@ -16,5 +16,6 @@ namespace BW.DAL
         {
         }
         public virtual DbSet<Article> Articles { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
     }
 }

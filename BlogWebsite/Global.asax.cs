@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
+﻿using BlogWebsite.App_Start;
 using BW.BLL.Account;
 using BW.Models.IdentityModels;
 using Microsoft.AspNet.Identity;
+using System.Web.Mvc;
+using System.Web.Optimization;
+using System.Web.Routing;
 
 namespace BlogWebsite
 {
@@ -16,6 +14,7 @@ namespace BlogWebsite
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundle(BundleTable.Bundles);
 
             var roleManager = MembershipTools.NewRoleManager();
             if (!roleManager.RoleExists("Admin"))

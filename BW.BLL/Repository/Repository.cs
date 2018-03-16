@@ -10,5 +10,6 @@ namespace BW.BLL.Repository
     public class Repository
     {
         public class ArticleRepo : RepositoryBase<Article, int> { }
+        public class CommentRepo : RepositoryBase<Comment, int> { }
     }
 }

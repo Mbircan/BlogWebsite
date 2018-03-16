@@ -1,0 +1,56 @@
+﻿@model BW.Models.ViewModels.ArticleCommentMultiViewModel
+@{
+	ViewBag.Title = "Index";
+	Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+<div class="content">
+	<div class="box1">
+		<h3>@Model.Article.Header</h3>
+		<span>Yazar : @Model.Article.Author</span><span class="likes">@Model.Article.Likes</span>
+		<div class="blog-data">
+			@Model.Article.Content
+		</div>
+		<div class="clear"></div>
+	</div>
+	<!----------------  Comment Area -------------------->
+	<div class="box comment">
+		<h2>Yorumlar <span>@Model.Comments.Count</span> </h2>
+		<ul class="list">
+			@foreach (var item in Model.Comments)
+			{
+				<li>				
+					<div class="data">
+						<div class="title">@item.CommentBy<a href="#"> @item.CommentDate</a></div>
+						<p>@item.CommentContent</p>
+					</div>
+					<div class="clear"></div>
+				</li>
+			}
+		</ul>
+		<div class="clear"></div>
+	</div>
+	<div class="comments-area">
+		<span>@Html.ValidationSummary()</span>
+		@using (Html.BeginForm("Insert", "Comment", FormMethod.Post))
+		{
+			@Html.AntiForgeryToken()
+			@Html.HiddenFor(x => x.Article.ArticleId)
+			<p>
+				<label>İsim</label>
+				<span>*</span>
+				@Html.TextBoxFor(x => x.NewComment.CommentBy)
+			</p>
+			<p>
+				<label>Yorum</label>
+				<span>*</span>
+				@Html.TextAreaFor(x => x.NewComment.CommentContent)
+			</p>
+			<p>
+				<input type="submit" value="Yorum Yap">
+			</p>
+		}
+	</div>
+	<div class="clear"> </div>
+	<!----------------- End Comment Area ----------------->
+</div>
+

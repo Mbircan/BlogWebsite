@@ -59,8 +59,8 @@ namespace BlogWebsite.Controllers
                     await SiteSettings.SendMail(new MailModel()
                     {
                         To = user.Email,
-                        Subject = "Kimlik Projesi - Aktivasyon",
-                        Message = $"Merhaba {user.Name} {user.Surname}</br>Hesabınızı aktifleştirmek için <b><a href='{siteUrl}/Account/Activation?code={activationCode}&u={user.Id}'>buraya</a></b> tıklayınız."
+                        Subject = "Murat Bircan Blog - Aktivasyon",
+                        Message = $"Merhaba {user.Name} {user.Surname}</br> Hesabınızı aktifleştirmek için <b><a href='{siteUrl}/Account/Activation?code={activationCode}&u={user.Id}'>buraya</a></b> tıklayınız."
 
                     });
                 }

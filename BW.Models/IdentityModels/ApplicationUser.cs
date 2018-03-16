@@ -21,6 +21,8 @@ namespace BW.Models.IdentityModels
         public string Surname { get; set; }
         public DateTime RegisterDate { get; set; } = DateTime.Now;
         public string ActivationCode { get; set; }
+        public string Bio { get; set; }
+        public string Title { get; set; }
         public string PhotoURL { get; set; }
         [NotMapped]
         public HttpPostedFileBase Photo { get; set; }
