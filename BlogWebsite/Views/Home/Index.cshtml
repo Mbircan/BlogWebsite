@@ -1,19 +1,90 @@
 ﻿@model List<BW.Models.Entities.Article>
+@using BW.BLL.Account
+@using BW.Models.IdentityModels
+@using Microsoft.AspNet.Identity
+@{
+	var userStore = MembershipTools.NewUserStore();
+	var userManager = new UserManager<ApplicationUser>(userStore);
+	var user = userManager.FindById(HttpContext.Current.User.Identity.GetUserId());
+	var currentRole = "Passive";
+	if (user != null)
+	{
+
+		currentRole = userManager.GetRoles(user.Id).FirstOrDefault();
+	}
+}
 @{
 	ViewBag.Title = "Index";
 	Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
-<div class="wrap">
-	<div class="main">
-		<div class="content">
+@section share{
+	<style>
+		.share-btn {
+			display: inline-block;
+			color: #ffffff;
+			border: none;
+			padding: 0.5em;
+			width: 4em;
+			box-shadow: 0 2px 0 0 rgba(0,0,0,0.2);
+			outline: none;
+			text-align: center;
+		}
+
+		.share-btn:hover {
+			color: #eeeeee;
+		}
+
+		.share-btn:active {
+			position: relative;
+			top: 2px;
+			box-shadow: none;
+			color: #e2e2e2;
+			outline: none;
+		}
+
+		.share-btn.twitter     { background: #55acee; }
+		.share-btn.google-plus { background: #dd4b39; }
+		.share-btn.facebook    { background: #3B5998; }
+		.share-btn.stumbleupon { background: #EB4823; }
+		.share-btn.reddit      { background: #ff5700; }
+		.share-btn.linkedin    { background: #4875B4; }
+		.share-btn.email       { background: #444444; }
+	</style>
+}
+			<div class="row">
+				<div class="col-md-12">
+					@if (currentRole != "Passive")
+					{
+						<a class="btn btn-info btn-lg" href="@Url.Action("Insert","Article")">Makale Yaz</a>
+					}
+				</div>
+			</div>
 			@foreach (var item in Model)
 			{
 				<div class="box1">
-					<h3><a href="@Url.Action("Index","Article",new {id=item.ArticleId})">@item.Header</a></h3>
-					<span>Yazar: @item.Author<span class="likes">@item.Likes</span></span>
+					<h3><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">@item.Header</a></h3>
+					<span>
+						Yazar: @item.Author<span style="font-size: medium">
+							<img src="~/images/likes.png" />@item.Likes
+						</span>
+						<a class="btn btn-primary" href="#">Beğen</a>
+					</span>
 					<div class="data">
 						<p>@item.Content</p>
-						<span><a href="@Url.Action("Index","Article",new {id=item.ArticleId})">Devamını Oku>>></a></span>
+						<span><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">Devamını Oku>>></a></span>
+						<a href="http://twitter.com/share?url=<URL>&text=@(item.Content)&via=mbircan9" target="_blank" class="share-btn twitter">
+							<i class="fa fa-twitter"></i>
+						</a>
+
+						<!-- Google Plus -->
+						<a href="https://plus.google.com/share?url=<BTN>" target="_blank" class="share-btn google-plus">
+							<i class="fa fa-google-plus"></i>
+						</a>
+
+						<!-- Facebook -->
+						<a href="http://www.facebook.com/sharer/sharer.php?u=<URL>" target="_blank" class="share-btn facebook">
+							<i class="fa fa-facebook"></i>
+						</a>
 					</div>
 					<div class="clear"></div>
 				</div>
@@ -37,9 +108,6 @@
 				<div class="page_bottom">
 					<p>Geri Git: <a href="#">Yukarı</a> | <a href="#">Ana Sayfa</a></p>
 				</div>
-			</div>
-		</div>
 		<div class="clear"></div>
 	</div>
-</div>
 

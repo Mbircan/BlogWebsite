@@ -7,7 +7,7 @@
 
 <div class="comments-area">
 	<span class="text-danger">@Html.ValidationSummary()</span>
-	<h3><img src="../../web/images/r-blog.png" title="Makale Ekle">Makale Ekle</h3>
+	<h3><img src="~/images/r-blog.png" title="Makale Ekle">Makale Ekle</h3>
 	@using (Html.BeginForm("Insert", "Article", FormMethod.Post))
 	{
 		@Html.AntiForgeryToken()

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using BW.BLL.Repository;
 
 namespace BlogWebsite.Controllers
 {
@@ -17,6 +18,8 @@ namespace BlogWebsite.Controllers
         // GET: Account
         public ActionResult Register()
         {
+            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            ViewBag.popular = popular;
             return View();
         }
         [HttpPost]
@@ -105,6 +108,8 @@ namespace BlogWebsite.Controllers
         [Authorize]
         public async Task<ActionResult> Profile()
         {
+            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            ViewBag.popular = popular;
             var userManeger = MembershipTools.NewUserManager();
             var user = await userManeger.FindByIdAsync(HttpContext.User.Identity.GetUserId());
             var model = new ProfilePasswordMultiViewModel();
@@ -265,6 +270,49 @@ namespace BlogWebsite.Controllers
                 ViewBag.sonuc = "<span class='text-danger'>Aktivasyon işlemi başarısız.</span>";
                 return View();
             }
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult EditUsers()
+        {
+            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            ViewBag.popular = popular;
+            var userStore = MembershipTools.NewUserStore();
+            var userManager = new UserManager<ApplicationUser>(userStore);
+            var model = userManager.Users.ToList();
+            return View(model);
+        }
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> MakeEditor(string id)
+        {
+            try
+            {
+                var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+                ViewBag.popular = popular;
+                var userStore = MembershipTools.NewUserStore();
+                var userManager = new UserManager<ApplicationUser>(userStore);
+                var user = await userManager.FindByIdAsync(id);
+                await userStore.Context.SaveChangesAsync();
+                await userManager.RemoveFromRoleAsync(user.Id, "User");
+                await userManager.AddToRoleAsync(user.Id, "Editor");
+                return RedirectToAction("EditUsers", "Account");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("",ex.Message);
+                return RedirectToAction("EditUsers", "Account");
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> Delete(string id)
+        {
+            var userStore = MembershipTools.NewUserStore();
+            var userManager = new UserManager<ApplicationUser>(userStore);
+            var user = await userManager.FindByIdAsync(id);
+            await userManager.DeleteAsync(user);
+            return RedirectToAction("EditUsers", "Account");
+
         }
     }
 }

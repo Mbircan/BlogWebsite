@@ -1,9 +1,30 @@
 ﻿@model BW.Models.ViewModels.ArticleCommentMultiViewModel
+@using BW.BLL.Account
+@using BW.Models.IdentityModels
+@using Microsoft.AspNet.Identity
+@{
+	var userStore = MembershipTools.NewUserStore();
+	var userManager = new UserManager<ApplicationUser>(userStore);
+	var currentRole = "Passive";
+	var user = userManager.FindById(HttpContext.Current.User.Identity.GetUserId());
+	if (user != null)
+	{
+		currentRole = userManager.GetRoles(user.Id).FirstOrDefault();
+	}
+}
 @{
 	ViewBag.Title = "Index";
 	Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
 <div class="content">
+	<div class="row">
+		<div class="col-md-12">
+			@if (currentRole != "Passive")
+			{
+				<a class="btn btn-info btn-lg" href="@Url.Action("Insert","Article")">Makale Yaz</a>
+			}
+		</div>
+	</div>
 	<div class="box1">
 		<h3>@Model.Article.Header</h3>
 		<span>Yazar : @Model.Article.Author</span><span class="likes">@Model.Article.Likes</span>
@@ -18,7 +39,7 @@
 		<ul class="list">
 			@foreach (var item in Model.Comments)
 			{
-				<li>				
+				<li>
 					<div class="data">
 						<div class="title">@item.CommentBy<a href="#"> @item.CommentDate</a></div>
 						<p>@item.CommentContent</p>

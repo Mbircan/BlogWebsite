@@ -1,0 +1,33 @@
+﻿@model List<BW.Models.Entities.Article>
+@{
+	ViewBag.Title = "ConfirmArticle";
+	Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+<div class="wrap">
+	<div class="main">
+		<div class="content">
+			@if (Model.Count == 0)
+			{
+				<h3 class="text-success">Tebrikler onay bekleyen makale yok.</h3>
+			}
+			@foreach (var item in Model)
+			{
+				<div class="box1">
+					<h3><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">@item.Header</a></h3>
+					<span>Yazar: @item.Author<span class="likes">@item.Likes</span></span>
+					<div class="data">
+						<p>@item.Content</p>
+						<a class="btn btn-success" href="@Url.Action("ConfirmArticle", "Article", new {id = item.ArticleId})">Onayla</a>
+						<a class="btn btn-danger" href="@Url.Action("Delete", "Article", new {id = item.ArticleId})">Sil</a>
+					</div>
+					<div class="clear"></div>
+				</div>
+			}
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+
+
+
+

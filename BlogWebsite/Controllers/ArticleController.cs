@@ -40,9 +40,11 @@ namespace BlogWebsite.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-
+        [Authorize(Roles = "Admin,Editor,User")]
         public ActionResult Insert()
         {
+            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            ViewBag.popular = popular;
             return View();
         }
         [HttpPost]
@@ -52,7 +54,7 @@ namespace BlogWebsite.Controllers
             var userStore = NewUserStore();
             var userManager = new UserManager<ApplicationUser>(userStore);
             var user = await userManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
-            var author = user.Name + user.Surname;
+            var author = user.Name + " " + user.Surname;
             var newArticle = new Article()
             {
                 Content = model.Content,
@@ -70,6 +72,8 @@ namespace BlogWebsite.Controllers
         {
             try
             {
+                var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+                ViewBag.popular = popular;
                 if (search == null)
                     return RedirectToAction("Index", "Home");
                 var articles = await new Repository.ArticleRepo().GetAllAsync();
@@ -90,6 +94,59 @@ namespace BlogWebsite.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("Index", "Home");
+            }
+        }
+        [Authorize(Roles = "Admin,Editor")]
+        public ActionResult ConfirmArticles()
+        {
+            try
+            {
+                var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+                ViewBag.popular = popular;
+                var model = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == false).ToList();
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return RedirectToAction("Index", "Home");
+            }
+        }
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<ActionResult> ConfirmArticle(int id)
+        {
+            try
+            {
+                var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+                ViewBag.popular = popular;
+                var userStore = NewUserStore();
+                var userManager = new UserManager<ApplicationUser>(userStore);
+                var admin = await userManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
+                var article = await new Repository.ArticleRepo().GetByIdAsync(id);
+                article.Confirmed = true;
+                article.ConfirmedBy = admin.Name + " " + admin.Surname;
+                await new Repository.ArticleRepo().UpdateAsync();
+                return RedirectToAction("ConfirmArticles", "Article");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return RedirectToAction("ConfirmArticles", "Article");
+            }
+        }
+        [Authorize(Roles = "Admin,Editor")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                var model = await new Repository.ArticleRepo().GetByIdAsync(id);
+                await new Repository.ArticleRepo().DeleteAsync(model);
+                return RedirectToAction("ConfirmArticles", "Article");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return RedirectToAction("ConfirmArticles", "Article");
             }
         }
     }

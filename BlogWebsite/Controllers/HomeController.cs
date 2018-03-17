@@ -21,6 +21,8 @@ namespace BlogWebsite.Controllers
 
         public ActionResult Contact()
         {
+            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            ViewBag.popular = popular;
             return View();
         }
 
