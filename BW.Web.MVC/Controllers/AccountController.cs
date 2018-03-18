@@ -1,15 +1,17 @@
 ﻿using BW.BLL.Account;
+using BW.BLL.Repository;
 using BW.BLL.Settings;
 using BW.Models.IdentityModels;
 using BW.Models.ViewModels;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
-using BW.BLL.Repository;
 
 namespace BW.Web.MVC.Controllers
 {
@@ -49,7 +51,8 @@ namespace BW.Web.MVC.Controllers
                 UserName = model.UserName,
                 Name = model.Name,
                 Surname = model.Surname,
-                ActivationCode = activationCode
+                ActivationCode = activationCode,
+                PhotoURL = "/images/user.png"
             };
             var result = userManager.Create(user, model.Password);
             if (result.Succeeded)
@@ -117,6 +120,8 @@ namespace BW.Web.MVC.Controllers
             {
                 Email = user.Email,
                 Name = user.Name,
+                Bio = user.Bio,
+                PhotoURL = user.PhotoURL,
                 Surname = user.Surname,
                 UserName = user.UserName,
                 RegisterDate = user.RegisterDate
@@ -139,7 +144,27 @@ namespace BW.Web.MVC.Controllers
                 var user = await userManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
                 user.Name = model.ProfileViewModel.Name;
                 user.Surname = model.ProfileViewModel.Surname;
+                user.Bio = model.ProfileViewModel.Bio;
                 user.Email = model.ProfileViewModel.Email;
+                if (model.ProfileViewModel.Photo != null && model.ProfileViewModel.Photo.ContentLength > 0)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(model.ProfileViewModel.Photo.FileName);
+                    string extensionName = Path.GetExtension(model.ProfileViewModel.Photo.FileName);
+                    fileName = SiteSettings.UrlFormatConverter(fileName);
+                    fileName += Guid.NewGuid().ToString().Replace("-", "");
+                    var directoryPath = Server.MapPath("~/Uploads/ProfilePhotos/");
+                    var filePath = Server.MapPath("~/Uploads/ProfilePhotos/" + fileName + extensionName);
+                    if (!Directory.Exists(directoryPath))
+                        Directory.CreateDirectory(directoryPath);
+                    model.ProfileViewModel.Photo.SaveAs(filePath);
+                    WebImage img = new WebImage(filePath);
+                    img.Resize(800, 800, false);
+                    img.AddTextWatermark("Murat Bircan Blog", fontColor: "antiquewhite", fontSize: 18, fontFamily: "Verdana");
+                    img.Save(filePath);
+                    if (!string.IsNullOrEmpty(user.PhotoURL) && user.PhotoURL != "/images/user.png")
+                        System.IO.File.Delete(Server.MapPath(user.PhotoURL));
+                    user.PhotoURL = $@"/Uploads/ProfilePhotos/{fileName}{extensionName}";
+                }
                 await userStore.UpdateAsync(user);
                 await userStore.Context.SaveChangesAsync();
                 return RedirectToAction("Profile", "Account");
@@ -299,7 +324,7 @@ namespace BW.Web.MVC.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("",ex.Message);
+                ModelState.AddModelError("", ex.Message);
                 return RedirectToAction("EditUsers", "Account");
             }
         }

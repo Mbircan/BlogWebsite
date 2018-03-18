@@ -30,84 +30,130 @@
 			text-align: center;
 		}
 
-		.share-btn:hover {
-			color: #eeeeee;
-		}
+			.share-btn:hover {
+				color: #eeeeee;
+			}
 
-		.share-btn:active {
-			position: relative;
-			top: 2px;
-			box-shadow: none;
-			color: #e2e2e2;
-			outline: none;
-		}
+			.share-btn:active {
+				position: relative;
+				top: 2px;
+				box-shadow: none;
+				color: #e2e2e2;
+				outline: none;
+			}
 
-		.share-btn.twitter     { background: #55acee; }
-		.share-btn.google-plus { background: #dd4b39; }
-		.share-btn.facebook    { background: #3B5998; }
-		.share-btn.stumbleupon { background: #EB4823; }
-		.share-btn.reddit      { background: #ff5700; }
-		.share-btn.linkedin    { background: #4875B4; }
-		.share-btn.email       { background: #444444; }
+			.share-btn.twitter {
+				background: #55acee;
+			}
+
+			.share-btn.google-plus {
+				background: #dd4b39;
+			}
+
+			.share-btn.facebook {
+				background: #3B5998;
+			}
+
+			.share-btn.stumbleupon {
+				background: #EB4823;
+			}
+
+			.share-btn.reddit {
+				background: #ff5700;
+			}
+
+			.share-btn.linkedin {
+				background: #4875B4;
+			}
+
+			.share-btn.email {
+				background: #444444;
+			}
 	</style>
 }
-			<div class="row">
-				<div class="col-md-12">
-					@if (currentRole != "Passive")
-					{
-						<a class="btn btn-info btn-lg" href="@Url.Action("Insert","Article")">Makale Yaz</a>
-					}
-				</div>
-			</div>
-			@foreach (var item in Model)
+<div class="row">
+	<div class="col-md-12">
+		@if (currentRole != "Passive")
+		{
+			<a class="btn btn-info btn-lg" href="@Url.Action("Insert","Article")">Makale Yaz</a>
+		}
+	</div>
+</div>
+@foreach (var item in Model)
+{
+	<div class="box1">
+		<h3><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">@item.Header</a></h3>
+		<span>
+			Yazar: @item.Author<span style="font-size: medium">
+				<img src="~/images/likes.png" />@item.Likes
+			</span>
+			@if (user != null)
 			{
-				<div class="box1">
-					<h3><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">@item.Header</a></h3>
-					<span>
-						Yazar: @item.Author<span style="font-size: medium">
-							<img src="~/images/likes.png" />@item.Likes
-						</span>
-						<a class="btn btn-primary" href="#">Beğen</a>
-					</span>
-					<div class="data">
-						<p>@item.Content</p>
-						<span><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">Devamını Oku>>></a></span>
-						<a href="http://twitter.com/share?url=<URL>&text=@(item.Content)&via=mbircan9" target="_blank" class="share-btn twitter">
-							<i class="fa fa-twitter"></i>
-						</a>
-
-						<!-- Google Plus -->
-						<a href="https://plus.google.com/share?url=<BTN>" target="_blank" class="share-btn google-plus">
-							<i class="fa fa-google-plus"></i>
-						</a>
-
-						<!-- Facebook -->
-						<a href="http://www.facebook.com/sharer/sharer.php?u=<URL>" target="_blank" class="share-btn facebook">
-							<i class="fa fa-facebook"></i>
-						</a>
-					</div>
-					<div class="clear"></div>
-				</div>
+				if (user.Likes == null)
+				{
+					<a class="btn btn-primary" href="@Url.Action("Like","Article",new{id=item.ArticleId,uid=user.Id})">Beğen</a>
+				}
+				else
+				{
+					bool liked = false;
+					for (int i = 0; i < user.Likes.Split(';').Length; i++)
+					{
+						if (user.Likes.Split(';')[i] == item.ArticleId.ToString())
+						{
+							liked = true;
+							break;
+						}
+					}
+					if (liked)
+					{
+						<a class="btn btn-danger" href="@Url.Action("Dislike","Article",new{id=item.ArticleId,uid=user.Id})">Beğenmekten Vazgeç</a>
+					}
+					else
+					{
+						<a class="btn btn-primary" href="@Url.Action("Like","Article",new{id=item.ArticleId,uid=user.Id})">Beğen</a>
+					}
+				}
 			}
-			<div class="page_links">
-				<div class="next_button">
-					<a href="#">İleri</a>
-				</div>
-				<div class="page_numbers">
-					<ul>
-						<li class="active"><a href="#">1</a>
-						<li><a href="#">2</a>
-						<li><a href="#">3</a>
-						<li><a href="#">4</a>
-						<li><a href="#">5</a>
-						<li><a href="#">6</a>
-						<li><a href="#">... İleri</a>
-					</ul>
-				</div>
-				<div class="clear"></div>
-				<div class="page_bottom">
-					<p>Geri Git: <a href="#">Yukarı</a> | <a href="#">Ana Sayfa</a></p>
-				</div>
+		</span>
+		<div class="data">
+			<p>@item.Content</p>
+			<span><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">Devamını Oku>>></a></span>
+			<a href="http://twitter.com/share?url=<URL>&text=@(item.Content)&via=mbircan9" target="_blank" class="share-btn twitter">
+				<i class="fa fa-twitter"></i>
+			</a>
+
+			<!-- Google Plus -->
+			<a href="https://plus.google.com/share?url=<BTN>" target="_blank" class="share-btn google-plus">
+				<i class="fa fa-google-plus"></i>
+			</a>
+
+			<!-- Facebook -->
+			<a href="http://www.facebook.com/sharer/sharer.php?u=<URL>" target="_blank" class="share-btn facebook">
+				<i class="fa fa-facebook"></i>
+			</a>
+		</div>
 		<div class="clear"></div>
 	</div>
+}
+<div class="page_links">
+	<div class="next_button">
+		<a href="#">İleri</a>
+	</div>
+	<div class="page_numbers">
+		<ul>
+			<li class="active"><a href="#">1</a>
+			<li><a href="#">2</a>
+			<li><a href="#">3</a>
+			<li><a href="#">4</a>
+			<li><a href="#">5</a>
+			<li><a href="#">6</a>
+			<li><a href="#">... İleri</a>
+		</ul>
+	</div>
+	<div class="clear"></div>
+	<div class="page_bottom">
+		<p>Geri Git: <a href="#">Yukarı</a> | <a href="#">Ana Sayfa</a></p>
+	</div>
+	<div class="clear"></div>
+</div>
 

@@ -26,11 +26,6 @@ namespace BW.Web.MVC.Controllers
             return View();
         }
 
-        public ActionResult AboutUs()
-        {
-            return View();
-        }
-
         public PartialViewResult HeaderPartialViewResult()
         {
             return PartialView("_HeaderPartialView");

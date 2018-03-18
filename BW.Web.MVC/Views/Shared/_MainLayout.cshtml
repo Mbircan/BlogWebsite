@@ -17,14 +17,6 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	<link href='//fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	@RenderSection("share",false)
-	<style>
-		#profile {
-			height: 50px;
-			width: 50px;
-			border: 2px solid black;
-			border-radius: 20px;
-		}
-	</style>
 	@Styles.Render("~/bundles/styles")
 </head>
 <body>
@@ -40,14 +32,18 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 			<div class="sidebar">
 				<div class="popular-post">
 					<h3>Popüler Makaleler</h3>
-					@foreach (var item in ViewBag.popular)
-						{
-					<div class="post-grid">
-						<img src="~/images/pop.png" title="@item.Header" alt="" />						
-						<p>@item.Header<a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">[...]</a></p>
-						<div class="clear"> </div>
-					</div>
-						}
+					@if (ViewBag.popular != null)
+					{
+						foreach (var item in ViewBag.popular)
+						 {
+							 <div class="post-grid">
+								 <img src="~/images/pop.png" title="@item.Header" alt="" />
+								 <i class="fa fa-arrow-right"></i><a class="popar" href="@Url.Action("Index", "Article", new {id = item.ArticleId})"><b>@item.Header</b></a>
+								 <p>@item.Content.Substring(0,75)<a class="popar" href="@Url.Action("Index", "Article", new {id = item.ArticleId})">[...]</a></p>
+								 <div class="clear"> </div>
+							 </div>
+						 }
+					}
 					<div class="view-all">
 						<a href="#">
 						</a><a href="#">Tümünü Gör</a>
@@ -63,13 +59,6 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	@{
 		Html.RenderAction("EndMainContentPartialViewResult", "Home");
 	}
-
-	<script src="~/Scripts/jquery-3.3.1.min.js"></script>
-	<script src="~/Scripts/bootstrap.min.js"></script>
-	<script src="~/Scripts/jquery.swipebox.min.js"></script>
-	<script src="~/Scripts/app.js"></script>
-	<script src="~/Scripts/modernizr-2.6.2.js"></script>
-	<script src="~/Scripts/modernizr.custom.69142.js"></script>
 	@Scripts.Render("~/bundles/js")
 </body>
 </html>

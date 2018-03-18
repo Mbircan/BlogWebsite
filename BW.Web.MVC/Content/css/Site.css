@@ -15,9 +15,43 @@ select,
 textarea {
     max-width: 280px;
 }
-.profile {
-	height: 50px;
-	width: 50px;
+#profile {
+	height: 110px;
+	width: 110px;
 	border: 2px solid black;
-	border-radius: 20px;
+	border-radius: 55px
 }
+#profilehud {
+	margin: 40px;
+}
+#profilehud p {
+	margin:10px
+}
+#username {
+	font-size: 40px;
+	color: crimson
+}
+#registerdate {
+	font-size: 25px;
+	color:gold
+}
+.thumbnail img {
+	height: 200px;
+	width: 200px;
+	border: 2px solid black;
+	border-radius: 100px;
+}
+.sosmedya ul li{
+	list-style: none;
+	display: inline;
+	margin: 10px;
+	padding-bottom: 5px;
+}
+.popar{
+	color: orange;
+	text-decoration: none;
+}
+	.popar:hover {
+		color: orangered;
+		text-decoration: none;
+	}

@@ -28,21 +28,21 @@
 				<div class="menu">
 					<ul class="menu bounce">
 						<li class="active"><a href="@Url.Action("Index","Home")">Ana Safya</a></li>
-						<li><a href="@Url.Action("AboutUs","Home")">Hakkımızda</a></li>
+						<li><a href="#">Hakkımızda</a></li>
 						<li><a href="@Url.Action("Contact","Home")">İletişim</a></li>
 					</ul>
 				</div>
 				<div class="clear"></div>
 			</div>
-			<div class="header-top-right">
-				@if (HttpContext.Current.User.Identity.IsAuthenticated)
-				{
-					<div style="padding-left: 40px">
-						<img id="profile" src="~/images/user.png" style="height: 100px; width: 100px; border: 2px solid black; border-radius: 50px" />
-					</div>
-				}
+			<div class="header-top-right">			
 				@if (user != null)
 				{
+					if (HttpContext.Current.User.Identity.IsAuthenticated)
+					 {
+						 <div style="padding-left: 40px">
+							 <img id="profile" src="@(user.PhotoURL)">
+						 </div>
+					 }
 					<ul class="menu">
 						<li>
 							<a class="btn btn-info" title="@user.UserName" href="@Url.Action("Profile", "Account", new {id = user.Id})">Profil</a>
@@ -78,17 +78,17 @@
 				}
 			</div>
 			<div class="header-top-right">
-				<div class="social-icons">
+				<div class="sosmedya">
 					<ul>
-						<li><a class="youtube" href="#" target="_blank"><span>Youtube</span></a></li>
-						<li><a class="facebook" href="#" target="_blank"><span>Facebook</span> </a></li>
-						<li><a class="twitter" href="#" target="_blank"><span>Twitter</span> </a></li>
-						<li><a class="skype" href="#" target="_blank"><span>Skype</span> </a></li>
-						<li><a class="likedin" href="#" target="_blank"><span>Linkedin</span> </a></li>
+						<li><a class="fa fa-instagram fa-2x"href="https://www.instagram.com/muratbircan9/" target="_blank"></a></li>
+						<li><a class="fa fa-facebook fa-2x" href="https://www.facebook.com/m.bircan.9" target="_blank"></a></li>
+						<li><a class="fa fa-twitter fa-2x" href="https://twitter.com/Mbircan9" target="_blank"></a></li>
+						<li><a class="fa fa-steam fa-2x" href="http://steamcommunity.com/id/mbircan9/" target="_blank"></a></li>
+						<li><a class="fa fa*linkedin fa-2x" href="https://www.linkedin.com/in/murat-bircan-5b82a4159/" target="_blank"></a></li>
 						<div class="clear"></div>
 					</ul>
 				</div>
-				<div class="search_box">
+				<div class="search_box" style="padding-top: 5px;">
 					@using (Html.BeginForm("GetByKeywords", "Article", FormMethod.Post))
 					{
 						@Html.AntiForgeryToken()

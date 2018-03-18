@@ -22,10 +22,11 @@ namespace BW.Models.IdentityModels
         public DateTime RegisterDate { get; set; } = DateTime.Now;
         public string ActivationCode { get; set; }
         public string Bio { get; set; }
-        public string Title { get; set; }
         public string PhotoURL { get; set; }
         [NotMapped]
         public HttpPostedFileBase Photo { get; set; }
+
+        public string Likes { get; set; } = "000";
         public virtual List<Article> Articles { get; set; } = new List<Article>();
     }
 }

@@ -14,7 +14,7 @@
 			{
 				<div class="box1">
 					<h3><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">@item.Header</a></h3>
-					<span>Yazar: @item.Author<span class="likes">@item.Likes</span></span>
+					<span>Yazar: @item.Author</span>
 					<div class="data">
 						<p>@item.Content</p>
 						<a class="btn btn-success" href="@Url.Action("ConfirmArticle", "Article", new {id = item.ArticleId})">Onayla</a>

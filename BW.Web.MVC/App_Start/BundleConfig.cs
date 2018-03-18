@@ -15,7 +15,8 @@ namespace BW.Web.MVC.App_Start
                 "~/Content/css/bootstrap.css",
                 "~/Content/css/font-awesome.css",
                 "~/Content/css/style.css",
-                "~/Content/css/swipebox.css"
+                "~/Content/css/swipebox.css",
+                "~/Content/css/Site.css"
             ));
             bundles.Add(new ScriptBundle("~/bundles/js").Include(
                 "~/Scripts/jquery-3.3.1.js",
@@ -23,9 +24,7 @@ namespace BW.Web.MVC.App_Start
                 "~/Scripts/jquery.swipebox.min.js",
                 "~/Scripts/modernizr-2.6.2.js",
                 "~/Scripts/modernizr.custom.69142.js",
-                "~/Scripts/app.js",
-                "~/Scripts/jquery-3.3.1.intellisense.js"
-
+                "~/Scripts/app.js"
             ));
         }
     }

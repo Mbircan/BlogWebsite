@@ -149,5 +149,79 @@ namespace BW.Web.MVC.Controllers
                 return RedirectToAction("ConfirmArticles", "Article");
             }
         }
+
+        public async Task<ActionResult> Like(int id, string uid)
+        {
+            try
+            {
+                var userStore = NewUserStore();
+                var userManager = new UserManager<ApplicationUser>(userStore);
+                var user = await userManager.FindByIdAsync(uid);
+                bool liked = false;
+                if (user.Likes!=null)
+                {
+                    foreach (var item in user.Likes.Split(';'))
+                    {
+                        if (item == id.ToString())
+                        {
+                            liked = true;
+                            break;
+                        }
+
+                    } 
+                }
+
+                if (!liked)
+                {
+                    user.Likes += ";" + id;
+                    await userManager.UpdateAsync(user);
+                    var article = await new Repository.ArticleRepo().GetByIdAsync(id);
+                    article.Likes++;
+                    await new Repository.ArticleRepo().UpdateAsync();
+                }               
+                await new Repository.ArticleRepo().UpdateAsync();
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("",ex.Message);
+                return RedirectToAction("Index", "Home");
+            }
+        }
+        public async Task<ActionResult> Dislike(int id, string uid)
+        {
+            try
+            {
+                var userStore = NewUserStore();
+                var userManager = new UserManager<ApplicationUser>(userStore);
+                var user = await userManager.FindByIdAsync(uid);
+                if (user.Likes != null)
+                {
+                    var likes = user.Likes.Split(';');
+                    var sum = 0;
+                    for (int i = 0; i < likes.Length; i++)
+                    {
+                        if (likes[i] == id.ToString())
+                        {
+                            user.Likes = user.Likes.Remove(sum, likes[i].Length + 1);
+                            break;
+                        }
+                        if (i > 0)
+                            sum++;
+                        sum += likes[i].Length;
+                    }
+                    await userManager.UpdateAsync(user);
+                    var article = await new Repository.ArticleRepo().GetByIdAsync(id);
+                    article.Likes--;
+                    await new Repository.ArticleRepo().UpdateAsync();
+                }
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return RedirectToAction("Index", "Home");
+            }
+        }
     }
 }
