@@ -50,27 +50,30 @@
 		</ul>
 		<div class="clear"></div>
 	</div>
-	<div class="comments-area">
-		<span>@Html.ValidationSummary()</span>
-		@using (Html.BeginForm("Insert", "Comment", FormMethod.Post))
-		{
-			@Html.AntiForgeryToken()
-			@Html.HiddenFor(x => x.Article.ArticleId)
-			<p>
-				<label>İsim</label>
-				<span>*</span>
-				@Html.TextBoxFor(x => x.NewComment.CommentBy)
-			</p>
-			<p>
-				<label>Yorum</label>
-				<span>*</span>
-				@Html.TextAreaFor(x => x.NewComment.CommentContent)
-			</p>
-			<p>
-				<input type="submit" value="Yorum Yap">
-			</p>
-		}
-	</div>
+	@if (HttpContext.Current.User.Identity.IsAuthenticated)
+	{
+		<div class="comments-area">
+			<span>@Html.ValidationSummary()</span>
+			@using (Html.BeginForm("Insert", "Comment", FormMethod.Post))
+			{
+				@Html.AntiForgeryToken()
+				@Html.HiddenFor(x => x.Article.ArticleId)
+				<p>
+					<label>İsim</label>
+					<span>*</span>
+					@Html.TextBoxFor(x => x.NewComment.CommentBy)
+				</p>
+				<p>
+					<label>Yorum</label>
+					<span>*</span>
+					@Html.TextAreaFor(x => x.NewComment.CommentContent)
+				</p>
+				<p>
+					<input type="submit" value="Yorum Yap">
+				</p>
+			}
+		</div>
+	}
 	<div class="clear"> </div>
 	<!----------------- End Comment Area ----------------->
 </div>
