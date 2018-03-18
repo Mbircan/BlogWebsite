@@ -34,50 +34,48 @@
 				</div>
 				<div class="clear"></div>
 			</div>
-			<div class="header-top-right" style="padding-left: 20px;padding-right: 0">
+			<div class="header-top-right">
 				@if (HttpContext.Current.User.Identity.IsAuthenticated)
 				{
-				<span style="padding-left: 50px">
-					<img id="profile" src="~/images/user.png" style="height: 100px; width: 100px; border: 2px solid black; border-radius: 50px" />
-				</span>
+					<div style="padding-left: 40px">
+						<img id="profile" src="~/images/user.png" style="height: 100px; width: 100px; border: 2px solid black; border-radius: 50px" />
+					</div>
 				}
-				<div>
-					@if (user != null)
-					{
-						<ul class="menu">
+				@if (user != null)
+				{
+					<ul class="menu">
+						<li>
+							<a class="btn btn-info" title="@user.UserName" href="@Url.Action("Profile", "Account", new {id = user.Id})">Profil</a>
+						</li>
+						<li>
+							<a class="btn btn-danger" title="Çıkış Yap" href="@Url.Action("Logout", "Account")">Çıkış Yap</a>
+						</li>
+						@if (currentRole == "Admin" || currentRole == "Editor")
+						{
 							<li>
-								<a class="btn btn-info" title="@user.UserName" href="@Url.Action("Profile", "Account", new {id = user.Id})">Profil</a>
+								<a class="btn btn-warning" title="Bekleyen Makaleler" href="@Url.Action("ConfirmArticles", "Article")">Bekleyen Makaleler(@confirms)</a>
 							</li>
+						}
+						@if (currentRole == "Admin")
+						{
 							<li>
-								<a class="btn btn-danger" title="Çıkış Yap" href="@Url.Action("Logout", "Account")">Çıkış Yap</a>
+								<a class="btn btn-warning" title="Bekleyen Makaleler" href="@Url.Action("EditUsers", "Account")">Kullanıcılar(@usersCount)</a>
 							</li>
-							@if (currentRole == "Admin" || currentRole == "Editor")
-							{
-								<li>
-									<a class="btn btn-warning" title="Bekleyen Makaleler" href="@Url.Action("ConfirmArticles", "Article")">Bekleyen Makaleler(@confirms)</a>
-								</li>
-							}
-							@if (currentRole == "Admin")
-							{
-								<li>
-									<a class="btn btn-warning" title="Bekleyen Makaleler" href="@Url.Action("EditUsers", "Account")">Kullanıcılar(@usersCount)</a>
-								</li>
-							}
-						</ul>
-					}
-					else
-					{
-						<ul class="menu">
-							<li>
-								<a class="btn btn-success" title="Giriş Yap" href="@Url.Action("Login", "Account")">Giriş Yap</a>
-							</li>
-							<li>
-								<a class="btn btn-info" title="Kayıt Ol" href="@Url.Action("Register", "Account")">Kayıt Ol</a>
-							</li>
-						</ul>
-					}
-				</div>
-
+						}
+					</ul>
+				}
+				else
+				{
+					<ul class="menu" style="padding-right:40px">
+						<li>
+							<a class="btn btn-success" title="Giriş Yap" href="@Url.Action("Login", "Account")">Giriş Yap</a>
+						</li>
+						<li>
+							<a class="btn btn-info" title="Kayıt Ol" href="@Url.Action("Register", "Account")">Kayıt Ol</a>
+						</li>
+					</ul>
+					<div class="clear"></div>
+				}
 			</div>
 			<div class="header-top-right">
 				<div class="social-icons">

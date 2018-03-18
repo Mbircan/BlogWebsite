@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Optimization;
 
-namespace BlogWebsite.App_Start
+namespace BW.Web.MVC.App_Start
 {
     public class BundleConfig
     {

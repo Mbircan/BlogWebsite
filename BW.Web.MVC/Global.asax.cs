@@ -1,12 +1,13 @@
-﻿using BlogWebsite.App_Start;
+﻿using BW.Web.MVC.App_Start;
 using BW.BLL.Account;
 using BW.Models.IdentityModels;
 using Microsoft.AspNet.Identity;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using BW.Web.MVC;
 
-namespace BlogWebsite
+namespace BW.Web.MVC
 {
     public class MvcApplication : System.Web.HttpApplication
     {

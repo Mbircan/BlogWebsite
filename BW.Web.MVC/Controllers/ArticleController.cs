@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using static BW.BLL.Account.MembershipTools;
 
-namespace BlogWebsite.Controllers
+namespace BW.Web.MVC.Controllers
 {
     public class ArticleController : Controller
     {

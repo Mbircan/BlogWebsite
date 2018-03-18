@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using BW.BLL.Repository;
 
-namespace BlogWebsite.Controllers
+namespace BW.Web.MVC.Controllers
 {
     public class HomeController : Controller
     {

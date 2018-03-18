@@ -3,10 +3,23 @@
 @{
 	Layout = "~/Views/Shared/_MainLayout.cshtml";
 	ViewBag.Title = $"{Model.ProfileViewModel.Name} {Model.ProfileViewModel.Surname} Profil Sayfası";
-}
-
-<h2>@($"{Model.ProfileViewModel.Name} {Model.ProfileViewModel.Surname} Profil Sayfası")</h2>
-<h3>@($"Üyelik tarihi : {Model.ProfileViewModel.RegisterDate}")</h3>
+}<div class="row">
+	<div class="span3 well">
+		<div class="row">
+			<div class="span1">
+				<a href="" class="thumbnail">
+					<img src="~/images/user.png" alt="">
+				</a>
+			</div>
+			<div class="span3">
+				<p>@Model.ProfileViewModel.Name @Model.ProfileViewModel.Surname</p>
+				<p>
+				<small>Üyelik Tarihi </small>@Model.ProfileViewModel.RegisterDate
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
 <div class="row">
 	<div class="col-md-6">
 		<span class="text-danger">@Html.ValidationSummary()</span>

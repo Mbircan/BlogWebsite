@@ -4,7 +4,7 @@ using System.Web.Mvc;
 using BW.BLL.Repository;
 using BW.Models.Entities;
 
-namespace BlogWebsite.Controllers
+namespace BW.Web.MVC.Controllers
 {
     public class CommentController : Controller
     {
