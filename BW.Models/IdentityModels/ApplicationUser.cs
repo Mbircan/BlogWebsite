@@ -25,8 +25,8 @@ namespace BW.Models.IdentityModels
         public string PhotoURL { get; set; }
         [NotMapped]
         public HttpPostedFileBase Photo { get; set; }
-
-        public string Likes { get; set; } = "000";
         public virtual List<Article> Articles { get; set; } = new List<Article>();
+        public virtual List<Comment> Coments { get; set; } = new List<Comment>();
+        public virtual List<Like> Likes { get; set; } = new List<Like>();
     }
 }

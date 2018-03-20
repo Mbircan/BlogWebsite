@@ -76,7 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Article.cs" />
+    <Compile Include="Entities\Category.cs" />
     <Compile Include="Entities\Comment.cs" />
+    <Compile Include="Entities\Like.cs" />
     <Compile Include="IdentityModels\ApplicationRole.cs" />
     <Compile Include="IdentityModels\ApplicationUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

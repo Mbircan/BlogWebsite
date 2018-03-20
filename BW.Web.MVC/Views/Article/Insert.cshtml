@@ -1,8 +1,8 @@
 ﻿@model BW.Models.ViewModels.ArticleViewModel
 @using Microsoft.AspNet.Identity
 @{
-    ViewBag.Title = "Insert";
-    Layout = "~/Views/Shared/_MainLayout.cshtml";
+	ViewBag.Title = "Insert";
+	Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
 
 <div class="comments-area">
@@ -17,18 +17,27 @@
 			@Html.TextBoxFor(x => x.Header)
 		</p>
 		<p>
+			<label>Kategori</label>
+			<span>*</span>
+			@Html.DropDownListFor(x => x.CategoryId, (List<SelectListItem>)ViewBag.kategorilist)
+		</p>
+		<p>
 			<label>İçerik</label>
 			<span>*</span>
 			@Html.TextAreaFor(x => x.Content)
-		</p>
-		<p>
-			<label>Anahtar Kelimeler (Aralarında ";" olacak şekilde ekleyebilirsiniz.)</label>
-			<span>*</span>
-			@Html.TextBoxFor(x => x.Keywords)
 		</p>
 		<p>
 			<input type="submit" value="Gönder">
 		</p>
 	}
 </div>
+@section script{
+	<script src="~/Scripts/ckeditor/ckeditor.js"></script>
+	<script>
+        CKEDITOR.replace('Content22',
+            {
+                uiColor: '#3e59ad'
+            });
+	</script>
+}
 

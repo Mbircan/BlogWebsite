@@ -15,17 +15,19 @@ namespace BW.Models.Entities
         public string Header { get; set; }
         [Key]
         public int ArticleId { get; set; }
-        public string Author { get; set; }
         public bool Confirmed { get; set; } = false;
         public string ConfirmedBy { get; set; }
-        public string Keywords { get; set; }
-        public int Likes { get; set; } = 0;
+        public int LikeCount { get; set; } = 0;
         public DateTime? AddDate { get; set; }=DateTime.Now;
         public string UserId { get; set; }
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; }
+        public int CategoryId { get; set; }
+        [ForeignKey("CategoryId")]
+        public virtual Category Category { get; set; }
 
         public virtual List<Comment> Comments { get; set; }=new List<Comment>();
+        public virtual List<Like> Likes { get; set; } = new List<Like>();
 
     }
 }

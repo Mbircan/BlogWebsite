@@ -27,7 +27,7 @@
 	</div>
 	<div class="box1">
 		<h3>@Model.Article.Header</h3>
-		<span>Yazar : @Model.Article.Author</span><span class="likes">@Model.Article.Likes</span>
+		<span>Yazar : @Model.Article.User.UserName @Model.Article.User.Surname</span><span class="likes">@Model.Article.LikeCount</span>
 		<div class="blog-data">
 			@Model.Article.Content
 		</div>
@@ -41,7 +41,7 @@
 			{
 				<li>
 					<div class="data">
-						<div class="title">@item.CommentBy<a href="#"> @item.CommentDate</a></div>
+						<div class="title">@item.UserId<a href="#"> @item.CommentDate</a></div>
 						<p>@item.CommentContent</p>
 					</div>
 					<div class="clear"></div>
@@ -54,14 +54,14 @@
 	{
 		<div class="comments-area">
 			<span>@Html.ValidationSummary()</span>
-			@using (Html.BeginForm("Insert", "Comment", FormMethod.Post))
+			@using (Html.BeginForm("Insert", "Comment", FormMethod.Post,new {id=HttpContext.Current.User.Identity.GetUserId()}))
 			{
 				@Html.AntiForgeryToken()
 				@Html.HiddenFor(x => x.Article.ArticleId)
 				<p>
 					<label>İsim</label>
 					<span>*</span>
-					@Html.TextBoxFor(x => x.NewComment.CommentBy)
+					@Html.TextBoxFor(x => x.NewComment.User.UserName)
 				</p>
 				<p>
 					<label>Yorum</label>

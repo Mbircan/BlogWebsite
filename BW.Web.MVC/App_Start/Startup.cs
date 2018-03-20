@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
-[assembly: OwinStartup(typeof(BW.Web.MVC.App_Start.Startup))]
-namespace BW.Web.MVC.App_Start
+[assembly: OwinStartup(typeof(BW.Web.MVC.Startup))]
+namespace BW.Web.MVC
 {
     public class Startup
     {

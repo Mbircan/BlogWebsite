@@ -16,7 +16,8 @@ namespace BW.Web.MVC.Controllers
     public class ArticleController : Controller
     {
         // GET: Article
-        public async Task<ActionResult> Index(int id)
+        [Route("{route}")]
+        public async Task<ActionResult> Index(int id, string route)
         {
 
             try
@@ -30,7 +31,7 @@ namespace BW.Web.MVC.Controllers
                     Article = article,
                     Comments = comments
                 };
-                var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+                var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
                 ViewBag.popular = popular;
                 return View(model);
             }
@@ -43,8 +44,26 @@ namespace BW.Web.MVC.Controllers
         [Authorize(Roles = "Admin,Editor,User")]
         public ActionResult Insert()
         {
-            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
             ViewBag.popular = popular;
+            var kategorilist = new List<SelectListItem>()
+            {
+                new SelectListItem()
+                {
+                    Text = "Kategori Seçiniz",
+                    Value = null
+                }
+
+            };
+            foreach (var category in new Repository.CategoryRepo().GetAll())
+            {
+                kategorilist.Add(new SelectListItem()
+                {
+                    Text = category.CategoryName,
+                    Value = category.CategoryId.ToString()
+                });
+            }
+            ViewBag.kategorilist = kategorilist;
             return View();
         }
         [HttpPost]
@@ -59,35 +78,30 @@ namespace BW.Web.MVC.Controllers
             {
                 Content = model.Content,
                 Header = model.Header,
-                Author = author,
-                Keywords = model.Keywords,
+                CategoryId = model.CategoryId,
                 UserId = HttpContext.User.Identity.GetUserId()
             };
-            var sonuc = await new Repository.ArticleRepo().InsertAsync(newArticle);
+            await new Repository.ArticleRepo().InsertAsync(newArticle);
             return RedirectToAction("Index", "Home");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> GetByKeywords(string search)
+        public ActionResult GetByKeywords(string search)
         {
             try
             {
-                var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+                var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
                 ViewBag.popular = popular;
                 if (search == null)
                     return RedirectToAction("Index", "Home");
-                var articles = await new Repository.ArticleRepo().GetAllAsync();
-                var model = new List<Article>();
-                foreach (var item in articles)
-                {
-                    if (item.Keywords == null)
-                        continue;
-                    if (item.Keywords.Split(';').Contains(search))
-                    {
-                        model.Add(item);
-                    }
-                }
-                if (model.Count == 0)
+                var model = new Repository.ArticleRepo()
+                    .Queryable()
+                    .Where(x => x.Header.Contains(search)
+                             || x.User.UserName.Contains(search)
+                             || x.User.Surname.Contains(search)
+                             || x.Content.Contains(search)
+                             || x.Category.CategoryName.Contains(search)).ToList();
+                if(model.Count==0)
                     return RedirectToAction("Index", "Home");
                 return View(model);
             }
@@ -101,9 +115,9 @@ namespace BW.Web.MVC.Controllers
         {
             try
             {
-                var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+                var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
                 ViewBag.popular = popular;
-                var model = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == false).ToList();
+                var model = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == false).OrderByDescending(x=>x.AddDate).ToList();
                 return View(model);
             }
             catch (Exception ex)
@@ -117,7 +131,7 @@ namespace BW.Web.MVC.Controllers
         {
             try
             {
-                var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+                var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
                 ViewBag.popular = popular;
                 var userStore = NewUserStore();
                 var userManager = new UserManager<ApplicationUser>(userStore);
@@ -154,37 +168,25 @@ namespace BW.Web.MVC.Controllers
         {
             try
             {
-                var userStore = NewUserStore();
-                var userManager = new UserManager<ApplicationUser>(userStore);
-                var user = await userManager.FindByIdAsync(uid);
-                bool liked = false;
-                if (user.Likes!=null)
+                var exists = new Repository.LikeRepo().Queryable().Where(x => x.UserId == uid && x.ArticleId == id)
+                    .Any();
+                var article = await new Repository.ArticleRepo().GetByIdAsync(id);
+                var like = new Like()
                 {
-                    foreach (var item in user.Likes.Split(';'))
-                    {
-                        if (item == id.ToString())
-                        {
-                            liked = true;
-                            break;
-                        }
-
-                    } 
-                }
-
-                if (!liked)
+                    ArticleId = id,
+                    UserId = uid
+                };
+                if (!exists)
                 {
-                    user.Likes += ";" + id;
-                    await userManager.UpdateAsync(user);
-                    var article = await new Repository.ArticleRepo().GetByIdAsync(id);
-                    article.Likes++;
+                    await new Repository.LikeRepo().InsertAsync(like);
+                    article.LikeCount++;
                     await new Repository.ArticleRepo().UpdateAsync();
-                }               
-                await new Repository.ArticleRepo().UpdateAsync();
+                }             
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("",ex.Message);
+                ModelState.AddModelError("", ex.Message);
                 return RedirectToAction("Index", "Home");
             }
         }
@@ -192,27 +194,15 @@ namespace BW.Web.MVC.Controllers
         {
             try
             {
-                var userStore = NewUserStore();
-                var userManager = new UserManager<ApplicationUser>(userStore);
-                var user = await userManager.FindByIdAsync(uid);
-                if (user.Likes != null)
+                var exists = new Repository.LikeRepo().Queryable().Where(x => x.UserId == uid && x.ArticleId == id)
+                    .Any();
+                var article = await new Repository.ArticleRepo().GetByIdAsync(id);
+                var like = new Repository.LikeRepo().Queryable().Where(x => x.UserId == uid && x.ArticleId == id)
+                    .FirstOrDefault();
+                if (exists)
                 {
-                    var likes = user.Likes.Split(';');
-                    var sum = 0;
-                    for (int i = 0; i < likes.Length; i++)
-                    {
-                        if (likes[i] == id.ToString())
-                        {
-                            user.Likes = user.Likes.Remove(sum, likes[i].Length + 1);
-                            break;
-                        }
-                        if (i > 0)
-                            sum++;
-                        sum += likes[i].Length;
-                    }
-                    await userManager.UpdateAsync(user);
-                    var article = await new Repository.ArticleRepo().GetByIdAsync(id);
-                    article.Likes--;
+                    await new Repository.LikeRepo().DeleteAsync(like);
+                    article.LikeCount--;
                     await new Repository.ArticleRepo().UpdateAsync();
                 }
                 return RedirectToAction("Index", "Home");

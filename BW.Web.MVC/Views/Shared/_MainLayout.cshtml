@@ -16,7 +16,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	<link href='//fonts.googleapis.com/css?family=Monda' rel='stylesheet' type='text/css'>
 	<link href='//fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	@RenderSection("share",false)
+	@RenderSection("share", false)
 	@Styles.Render("~/bundles/styles")
 </head>
 <body>
@@ -26,7 +26,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 	<!--------------------- Main Content ------------------->
 	<div class="wrap">
 		<div class="main">
-			<div class="content">				
+			<div class="content">
 				@RenderBody()
 			</div>
 			<div class="sidebar">
@@ -35,14 +35,14 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 					@if (ViewBag.popular != null)
 					{
 						foreach (var item in ViewBag.popular)
-						 {
-							 <div class="post-grid">
-								 <img src="~/images/pop.png" title="@item.Header" alt="" />
-								 <i class="fa fa-arrow-right"></i><a class="popar" href="@Url.Action("Index", "Article", new {id = item.ArticleId})"><b>@item.Header</b></a>
-								 <p>@item.Content.Substring(0,75)<a class="popar" href="@Url.Action("Index", "Article", new {id = item.ArticleId})">[...]</a></p>
-								 <div class="clear"> </div>
-							 </div>
-						 }
+						{
+							<div class="post-grid">
+								<img src="~/images/pop.png" title="@item.Header" alt="" />
+								<i class="fa fa-arrow-right"></i><a class="popar" href="@Url.Action("Index", "Article", new {id = item.ArticleId})"><b>@item.Header</b></a>
+								<p>@item.Content<a class="popar" href="@Url.Action("Index", "Article", new {id=item.ArticleId,route=item.Header.Replace(' ','-')})">[...]</a></p>
+								<div class="clear"> </div>
+							</div>
+						}
 					}
 					<div class="view-all">
 						<a href="#">
@@ -60,6 +60,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		Html.RenderAction("EndMainContentPartialViewResult", "Home");
 	}
 	@Scripts.Render("~/bundles/js")
+	@RenderSection("script", false)
 </body>
 </html>
 

@@ -1,5 +1,6 @@
 ﻿@model List<BW.Models.Entities.Article>
 @using BW.BLL.Account
+@using BW.BLL.Repository
 @using BW.Models.IdentityModels
 @using Microsoft.AspNet.Identity
 @{
@@ -79,45 +80,30 @@
 		}
 	</div>
 </div>
-@foreach (var item in Model)
+@foreach (var item in Model.Take(10))
 {
 	<div class="box1">
-		<h3><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">@item.Header</a></h3>
+		<h3><a href="@Url.Action("Index", "Article", new {id = item.ArticleId,route=item.Header.Replace(' ','-')})">@item.Header</a></h3>
 		<span>
-			Yazar: @item.Author<span style="font-size: medium">
-				<img src="~/images/likes.png" />@item.Likes
+			Yazar: @item.User.Name @item.User.Surname<span style="font-size: medium">
+				<img src="~/images/likes.png" />@item.LikeCount
 			</span>
 			@if (user != null)
 			{
-				if (user.Likes == null)
+				var liked = new Repository.LikeRepo().Queryable().Where(x => x.UserId == user.Id && x.ArticleId == item.ArticleId).Any();
+				if (!liked)
 				{
 					<a class="btn btn-primary" href="@Url.Action("Like","Article",new{id=item.ArticleId,uid=user.Id})">Beğen</a>
 				}
 				else
 				{
-					bool liked = false;
-					for (int i = 0; i < user.Likes.Split(';').Length; i++)
-					{
-						if (user.Likes.Split(';')[i] == item.ArticleId.ToString())
-						{
-							liked = true;
-							break;
-						}
-					}
-					if (liked)
-					{
-						<a class="btn btn-danger" href="@Url.Action("Dislike","Article",new{id=item.ArticleId,uid=user.Id})">Beğenmekten Vazgeç</a>
-					}
-					else
-					{
-						<a class="btn btn-primary" href="@Url.Action("Like","Article",new{id=item.ArticleId,uid=user.Id})">Beğen</a>
-					}
+					<a class="btn btn-danger" href="@Url.Action("Dislike","Article",new{id=item.ArticleId,uid=user.Id})">Beğenmekten Vazgeç</a>
 				}
 			}
 		</span>
 		<div class="data">
 			<p>@item.Content</p>
-			<span><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">Devamını Oku>>></a></span>
+			<span><a href="@Url.Action("Index", "Article", new {id = item.ArticleId,route=item.Header.Replace(' ','-')})">Devamını Oku>>></a></span>
 			<a href="http://twitter.com/share?url=<URL>&text=@(item.Content)&via=mbircan9" target="_blank" class="share-btn twitter">
 				<i class="fa fa-twitter"></i>
 			</a>
@@ -141,13 +127,10 @@
 	</div>
 	<div class="page_numbers">
 		<ul>
-			<li class="active"><a href="#">1</a>
-			<li><a href="#">2</a>
-			<li><a href="#">3</a>
-			<li><a href="#">4</a>
-			<li><a href="#">5</a>
-			<li><a href="#">6</a>
-			<li><a href="#">... İleri</a>
+			@for (int i = 1; i <= (ViewBag.count/10)+1; i++)
+			{
+				<li><a href="@Url.Action("Index","Home",new{id=i})">@i</a></li>
+			}
 		</ul>
 	</div>
 	<div class="clear"></div>

@@ -11,17 +11,20 @@ namespace BW.Web.MVC.Controllers
     public class HomeController : Controller
     {
         // GET: Home
-        public ActionResult Index()
+        public ActionResult Index(int id=1)
         {
-            var model = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).ToList();
-            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            var pageSize = 10;
+            var model = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x=>x.AddDate).Skip((id - 1)*pageSize).Take(pageSize).ToList();
+            var popular = new Repository.ArticleRepo().Queryable().Where(x=>x.Confirmed==true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
             ViewBag.popular = popular;
+            var count = new Repository.ArticleRepo().GetAll().Count;
+            ViewBag.count = count;
             return View(model);
         }
 
         public ActionResult Contact()
         {
-            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
             ViewBag.popular = popular;
             return View();
         }

@@ -20,7 +20,7 @@ namespace BW.Web.MVC.Controllers
         // GET: Account
         public ActionResult Register()
         {
-            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
             ViewBag.popular = popular;
             return View();
         }
@@ -111,7 +111,7 @@ namespace BW.Web.MVC.Controllers
         [Authorize]
         public async Task<ActionResult> Profile()
         {
-            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
             ViewBag.popular = popular;
             var userManeger = MembershipTools.NewUserManager();
             var user = await userManeger.FindByIdAsync(HttpContext.User.Identity.GetUserId());
@@ -267,13 +267,11 @@ namespace BW.Web.MVC.Controllers
                     ViewBag.sonuc = "<span class='text-danger'>Aktivasyon işlemi başarısız</span>";
                     return View();
                 }
-
                 if (sonuc.EmailConfirmed)
                 {
                     ViewBag.sonuc = "<span class='text-warning'>E-posta adresiniz zaten onaylanmış.</span>";
                     return View();
                 }
-
                 sonuc.EmailConfirmed = true;
                 await userStore.UpdateAsync(sonuc);
                 await userStore.Context.SaveChangesAsync();
@@ -300,7 +298,7 @@ namespace BW.Web.MVC.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult EditUsers()
         {
-            var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
+            var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
             ViewBag.popular = popular;
             var userStore = MembershipTools.NewUserStore();
             var userManager = new UserManager<ApplicationUser>(userStore);

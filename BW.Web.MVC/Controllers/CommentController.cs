@@ -11,12 +11,12 @@ namespace BW.Web.MVC.Controllers
         // GET: Comment
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Insert(ArticleCommentMultiViewModel model)
+        public async Task<ActionResult> Insert(ArticleCommentMultiViewModel model, string id)
         {
             var newComment = new Comment()
             {
                 CommentContent = model.NewComment.CommentContent,
-                CommentBy = model.NewComment.CommentBy,
+                UserId =id,
                 ArticleId = model.Article.ArticleId
             };
             await new Repository.CommentRepo().InsertAsync(newComment);

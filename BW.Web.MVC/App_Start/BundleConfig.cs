@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
-namespace BW.Web.MVC.App_Start
+namespace BW.Web.MVC
 {
     public class BundleConfig
     {
