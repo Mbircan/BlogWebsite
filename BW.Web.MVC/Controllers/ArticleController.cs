@@ -61,26 +61,35 @@ namespace BW.Web.MVC.Controllers
         {
             try
             {
+                var kategorilist = new List<SelectListItem>();
+                foreach (var category in new Repository.CategoryRepo().GetAll())
+                {
+                    kategorilist.Add(new SelectListItem()
+                    {
+                        Text = category.CategoryName,
+                        Value = category.CategoryId.ToString()
+                    });
+                }
+                ViewBag.kategorilist = kategorilist;
                 if (!ModelState.IsValid)
                     return View(model);
                 var userStore = NewUserStore();
                 var userManager = new UserManager<ApplicationUser>(userStore);
                 var user = await userManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
-                var author = user.Name + " " + user.Surname;
                 var newArticle = new Article()
                 {
                     Content = model.Content,
                     Header = model.Header,
                     CategoryId = model.CategoryId,
-                    UserId = HttpContext.User.Identity.GetUserId()
+                    UserId = user.Id
                 };
                 await new Repository.ArticleRepo().InsertAsync(newArticle);
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("",ex.Message);
-                return RedirectToAction("Insert","Article");
+                ModelState.AddModelError("", "Bir hata oluştu lütfen boş alan kalmadığından emin olunuz.");
+                return View(model);
             }
         }
         [HttpPost]
@@ -97,7 +106,7 @@ namespace BW.Web.MVC.Controllers
                                 || x.User.UserName.Contains(search)
                                 || x.User.Surname.Contains(search)
                                 || x.Content.Contains(search)
-                                || x.Category.CategoryName.Contains(search)).ToList();                               
+                                || x.Category.CategoryName.Contains(search)).ToList();
                 ViewBag.count = sonuc.Count();
                 var model = sonuc.Skip((page - 1) * 5).Take(5).ToList();
                 if (model.Count == 0)

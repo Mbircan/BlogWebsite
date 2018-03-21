@@ -8,21 +8,23 @@
 <div>
 	<span class="text-danger">@Html.ValidationSummary()</span>
 	<h3><img src="~/images/r-blog.png" title="Makale Ekle">Makale Ekle</h3>
-	<span class="text-danger">@Html.ValidationSummary()</span>
 	@using (Html.BeginForm("Insert", "Article", FormMethod.Post, new { @class = "form-horizontal" }))
 	{
 		@Html.AntiForgeryToken()
 		<p>
 			<label>Başlık</label>
-			@Html.TextBoxFor(x => x.Header,new{@class="form-control",placeholder="Başlık"})
+			@Html.TextBoxFor(x => x.Header, new { @class = "form-control", placeholder = "Başlık" })
+			<span class="text-danger">@Html.ValidationMessageFor(x => x.Header)</span>
 		</p>
 		<p>
 			<label>Kategori</label>
-			@Html.DropDownListFor(x => x.CategoryId,(List<SelectListItem>)ViewBag.kategorilist,new{@class="form-control"})
+			@Html.DropDownListFor(x => x.CategoryId, (List<SelectListItem>)ViewBag.kategorilist, new { @class = "form-control" })
+			<span class="text-danger">@Html.ValidationMessageFor(x => x.CategoryId)</span>
 		</p>
 		<p>
 			<label>İçerik</label>
-			@Html.TextAreaFor(x => x.Content,new{@class="form-control",placeholder="Makalenizi yazın.."})
+			@Html.TextAreaFor(x => x.Content, new { @class = "form-control", placeholder = "Makalenizi yazın.." })
+			<span class="text-danger">@Html.ValidationMessageFor(x => x.Content)</span>
 		</p>
 		<p>
 			<input type="submit" value="Gönder">
@@ -32,10 +34,10 @@
 @section script{
 	<script src="~/Scripts/ckeditor/ckeditor.js"></script>
 	<script>
-        CKEDITOR.replace('Content',
-            {
-                uiColor: '#3e59ad'
-            });
+		CKEDITOR.replace('Content',
+			{
+				uiColor: '#3e59ad'
+			});
 	</script>
 }
 
