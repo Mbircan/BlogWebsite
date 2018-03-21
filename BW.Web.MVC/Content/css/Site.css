@@ -58,4 +58,11 @@ textarea {
 #social a{
 	margin: 5px;
 }
+#user {
+	margin: 10px;
+}
+#user li a {
+	color: maroon;
+	padding: 10px;
+}
 

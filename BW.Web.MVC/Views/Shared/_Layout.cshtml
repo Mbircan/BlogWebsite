@@ -57,7 +57,7 @@
 
 			<div class="header-content twelve columns">
 
-				<h1 id="logo-text"><a href="index.html" title="">Murat Bircan</a></h1>
+				<h1 id="logo-text"><a href="~/Views/Home/Index.cshtml" title="">Murat Bircan</a></h1>
 				<p id="intro">Düşün , keşfet , paylaş...</p>
 
 			</div>
@@ -84,6 +84,8 @@
 					</li>
 					<li><a href="@Url.Action("Insert","Article")">Makale Paylaş</a></li>
 					<li><a href="@Url.Action("Contact","Home")">İletişim</a></li>
+				</ul> <!-- end #nav -->
+				<ul class="nav header-top-right" id="user">
 					@if (HttpContext.Current.User.Identity.IsAuthenticated)
 					{
 						<li class="has-children">
@@ -107,7 +109,7 @@
 						<li><a href="@Url.Action("Login","Account")">Giriş Yap</a></li>
 						<li><a href="@Url.Action("Register","Account")">Kayıt Ol</a></li>
 					}
-				</ul> <!-- end #nav -->
+				</ul>
 			</div>
 
 		</nav> <!-- end #nav-wrap -->
