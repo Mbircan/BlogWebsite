@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using BW.Models.ViewModels;
 using System.Web.Mvc;
 using BW.BLL.Repository;
@@ -13,14 +14,23 @@ namespace BW.Web.MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Insert(ArticleCommentMultiViewModel model)
         {
-            var newComment = new Comment()
+            try
             {
-                CommentContent = model.NewComment.CommentContent,
-                UserId =model.CommenterId,
-                ArticleId = model.Article.ArticleId
-            };
-            await new Repository.CommentRepo().InsertAsync(newComment);
-            return RedirectToAction("Single","Article",new{id=model.Article.ArticleId,route=model.Article.Header.Replace(' ','-')});
+                var newComment = new Comment()
+                {
+                    CommentContent = model.NewComment.CommentContent,
+                    UserId = model.CommenterId,
+                    ArticleId = model.Article.ArticleId
+                };
+                await new Repository.CommentRepo().InsertAsync(newComment);
+                return RedirectToAction("Single", "Article", new { id = model.Article.ArticleId, route = model.Article.Header.Replace(' ', '-') });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("",ex.Message);
+                return RedirectToAction("Single", "Article",
+                    new {id = model.Article.ArticleId, route = model.Article.Header.Replace(' ', '-')});
+            }
         }
     }
 }

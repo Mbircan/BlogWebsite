@@ -59,21 +59,29 @@ namespace BW.Web.MVC.Controllers
         [Authorize(Roles = "Admin,Editor,User")]
         public async Task<ActionResult> Insert(ArticleViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-            var userStore = NewUserStore();
-            var userManager = new UserManager<ApplicationUser>(userStore);
-            var user = await userManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
-            var author = user.Name + " " + user.Surname;
-            var newArticle = new Article()
+            try
             {
-                Content = model.Content,
-                Header = model.Header,
-                CategoryId = model.CategoryId,
-                UserId = HttpContext.User.Identity.GetUserId()
-            };
-            await new Repository.ArticleRepo().InsertAsync(newArticle);
-            return RedirectToAction("Index", "Home");
+                if (!ModelState.IsValid)
+                    return View(model);
+                var userStore = NewUserStore();
+                var userManager = new UserManager<ApplicationUser>(userStore);
+                var user = await userManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
+                var author = user.Name + " " + user.Surname;
+                var newArticle = new Article()
+                {
+                    Content = model.Content,
+                    Header = model.Header,
+                    CategoryId = model.CategoryId,
+                    UserId = HttpContext.User.Identity.GetUserId()
+                };
+                await new Repository.ArticleRepo().InsertAsync(newArticle);
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("",ex.Message);
+                return RedirectToAction("Insert","Article");
+            }
         }
         [HttpPost]
         [ValidateAntiForgeryToken]

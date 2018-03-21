@@ -9,20 +9,20 @@
 	<span class="text-danger">@Html.ValidationSummary()</span>
 	<h3><img src="~/images/r-blog.png" title="Makale Ekle">Makale Ekle</h3>
 	<span class="text-danger">@Html.ValidationSummary()</span>
-	@using (Html.BeginForm("Insert", "Article", FormMethod.Post))
+	@using (Html.BeginForm("Insert", "Article", FormMethod.Post, new { @class = "form-horizontal" }))
 	{
 		@Html.AntiForgeryToken()
 		<p>
 			<label>Başlık</label>
-			@Html.TextBoxFor(x => x.Header)
+			@Html.TextBoxFor(x => x.Header,new{@class="form-control",placeholder="Başlık"})
 		</p>
 		<p>
 			<label>Kategori</label>
-			@Html.DropDownListFor(x => x.CategoryId, (List<SelectListItem>)ViewBag.kategorilist)
+			@Html.DropDownListFor(x => x.CategoryId,(List<SelectListItem>)ViewBag.kategorilist,new{@class="form-control"})
 		</p>
 		<p>
 			<label>İçerik</label>
-			@Html.TextAreaFor(x => x.Content)
+			@Html.TextAreaFor(x => x.Content,new{@class="form-control",placeholder="Makalenizi yazın.."})
 		</p>
 		<p>
 			<input type="submit" value="Gönder">
