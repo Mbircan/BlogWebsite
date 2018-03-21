@@ -1,0 +1,249 @@
+﻿@using System.Web.Optimization
+@using BW.BLL.Account
+@using BW.BLL.Repository
+@using BW.Models.IdentityModels
+@using Microsoft.AspNet.Identity
+@{
+	var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
+	var kategorilist = new Repository.CategoryRepo().GetAll();
+	var a = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == false).Count();
+}
+@{
+	var userStore = MembershipTools.NewUserStore();
+	var userManager = new UserManager<ApplicationUser>(userStore);
+	var user = userManager.FindById(HttpContext.Current.User.Identity.GetUserId());
+	var confirms = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == false).Count();
+	var usersCount = userManager.Users.Count();
+	var currentRole = "Passive";
+	if (user != null)
+	{
+		currentRole = userManager.GetRoles(user.Id).FirstOrDefault();
+
+	}
+}
+<!DOCTYPE html>
+<!--[if lt IE 8 ]><html class="no-js ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="no-js ie ie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]><html class="no-js ie ie9" lang="en"> <![endif]-->
+<!--[if (gte IE 8)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+<head>
+	<!--- Basic Page Needs
+	================================================== -->
+	<meta charset="utf-8">
+	<title>Murat Bircan Blog.</title>
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<!-- mobile specific metas
+	================================================== -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<!-- CSS
+	================================================== -->
+	@Styles.Render("~/bundles/styles")
+
+	<!-- Favicons
+	 ================================================== -->
+	<link rel="shortcut icon" href="~/Theme/favicon.png">
+</head>
+
+<body>
+
+	<!-- Header
+	================================================== -->
+	<header id="top">
+
+		<div class="row">
+
+			<div class="header-content twelve columns">
+
+				<h1 id="logo-text"><a href="index.html" title="">Murat Bircan</a></h1>
+				<p id="intro">Düşün , keşfet , paylaş...</p>
+
+			</div>
+
+		</div>
+
+		<nav id="nav-wrap">
+
+			<a class="mobile-btn" href="#nav-wrap" title="Show navigation">Show Menu</a>
+			<a class="mobile-btn" href="#" title="Hide navigation">Hide Menu</a>
+
+			<div class="row">
+
+				<ul id="nav" class="nav">
+					<li class="current"><a href="@Url.Action("Index","Home")">Home</a></li>
+					<li class="has-children">
+						<a href="#">Kategoriler</a>
+						<ul>
+							@foreach (var item in kategorilist)
+							{
+								<li><a href="@Url.Action("GetByCatId","Article",new {id=item.CategoryId})">@item.CategoryName</a></li>
+							}
+						</ul>
+					</li>
+					<li><a href="@Url.Action("Insert","Article")">Makale Paylaş</a></li>
+					<li><a href="@Url.Action("Contact","Home")">İletişim</a></li>
+					@if (HttpContext.Current.User.Identity.IsAuthenticated)
+					{
+						<li class="has-children">
+							<a href="@Url.Action("Profile","Account",new {id=user.Id})">@user.UserName</a>
+							<ul>
+								<li><a href="@Url.Action("Profile","Account",new {id=user.Id})">Profil</a></li>
+								@if (currentRole == "Admin" || currentRole == "Editor")
+								{
+									<li><a href="@Url.Action("ConfirmArticles","Article")">Bekleyen Makaleler(@a)</a></li>
+								}
+								@if (currentRole == "Admin")
+								{
+									<li><a href="@Url.Action("EditUsers","Account")">Kullanıcılar(@usersCount)</a></li>
+								}
+								<li><a href="@Url.Action("Logout","Account")">Çıkış Yap</a></li>
+							</ul>
+						</li>
+					}
+					else
+					{
+						<li><a href="@Url.Action("Login","Account")">Giriş Yap</a></li>
+						<li><a href="@Url.Action("Register","Account")">Kayıt Ol</a></li>
+					}
+				</ul> <!-- end #nav -->
+			</div>
+
+		</nav> <!-- end #nav-wrap -->
+
+	</header> <!-- Header End -->
+	<!-- Content
+	================================================== -->
+	<div id="content-wrap">
+
+		<div class="row">
+
+			<div id="main" class="eight columns">
+
+				@RenderBody()
+			</div> <!-- end main -->
+
+			<div id="sidebar" class="four columns">
+
+				<div class="widget widget_search">
+					<h3>Ara</h3>
+					@*<form action="@Url.Action("GetByKeywords","Article")">
+
+							<input name="search" type="text" value="Sitede arayın..." onblur="if(this.value == '') { this.value = 'Sitede arayın...'; }" onfocus="if (this.value == 'Sitede arayın...') { this.value = ''; }" class="text-search">
+							<input type="submit" value="" class="submit-search">
+
+						</form>*@
+					@using (Html.BeginForm("GetByKeywords", "Article", FormMethod.Post))
+					{
+						@Html.AntiForgeryToken()
+						<input name="search" type="text" value="Sitede arayın..." onblur="if(this.value == '') { this.value = 'Sitede arayın...'; }" onfocus="if (this.value == 'Sitede arayın...') { this.value = ''; }" class="text-search">
+						<input type="submit" value="" class="submit-search">
+					}
+				</div>
+
+				<div class="widget widget_categories group">
+					<h3>Kategoriler</h3>
+					<ul>
+						@foreach (var item in kategorilist)
+						{
+							<li><a href="@Url.Action("GetByCatId","Article",new {id=item.CategoryId})" title="">@item.CategoryName</a> (@item.Articles.Count)</li>
+						}
+					</ul>
+				</div>
+				<div class="widget widget_popular">
+					<h3>Popüler Makaleler.</h3>
+
+					<ul class="link-list">
+						@foreach (var item in popular)
+						{
+							<li><a href="@Url.Action("Single","Article",new {id=item.ArticleId,route=@item.Header.Replace(' ','-')})">@item.Header<small> Yazar:@item.User.UserName</small></a></li>
+						}
+					</ul>
+
+				</div>
+
+			</div> <!-- end sidebar -->
+
+		</div> <!-- end row -->
+
+	</div> <!-- end content-wrap -->
+	<!-- Footer
+	================================================== -->
+	<footer>
+
+		<div class="row">
+
+			<div class="twelve columns">
+				<ul class="social-links">
+					<li><a href="#"><i class="fa fa-facebook"></i></a></li>
+					<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+					<li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+					<li><a href="#"><i class="fa fa-github-square"></i></a></li>
+					<li><a href="#"><i class="fa fa-instagram"></i></a></li>
+					<li><a href="#"><i class="fa fa-flickr"></i></a></li>
+					<li><a href="#"><i class="fa fa-skype"></i></a></li>
+				</ul>
+			</div>
+
+			<div class="six columns info">
+
+				<h3>About Keep It Simple</h3>
+
+				<p>
+					This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet.
+					Aenean sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum, nec sagittis sem
+					nibh id elit.
+				</p>
+
+				<p>
+					Lorem ipsum Sed nulla deserunt voluptate elit occaecat culpa cupidatat sit irure sint
+					sint incididunt cupidatat esse in Ut sed commodo tempor consequat culpa fugiat incididunt.
+				</p>
+
+			</div>
+
+			<div class="four columns">
+
+				<h3>Photostream</h3>
+
+				<ul class="photostream group">
+					<li><a href="#"><img alt="thumbnail" src="~/images/thumb.jpg"></a></li>
+					<li><a href="#"><img alt="thumbnail" src="~/images/thumb.jpg"></a></li>
+					<li><a href="#"><img alt="thumbnail" src="~/images/thumb.jpg"></a></li>
+					<li><a href="#"><img alt="thumbnail" src="~/images/thumb.jpg"></a></li>
+					<li><a href="#"><img alt="thumbnail" src="~/images/thumb.jpg"></a></li>
+					<li><a href="#"><img alt="thumbnail" src="~/images/thumb.jpg"></a></li>
+					<li><a href="#"><img alt="thumbnail" src="~/images/thumb.jpg"></a></li>
+					<li><a href="#"><img alt="thumbnail" src="~/images/thumb.jpg"></a></li>
+				</ul>
+
+			</div>
+
+			<div class="two columns">
+				<h3 class="social">Navigate</h3>
+
+				<ul class="navigate group">
+					<li><a href="#">Home</a></li>
+					<li><a href="#">Blog</a></li>
+					<li><a href="#">Demo</a></li>
+					<li><a href="#">Archives</a></li>
+					<li><a href="#">About</a></li>
+				</ul>
+			</div>
+
+			<p class="copyright">&copy; Copyright 2014 Keep It Simple. &nbsp; Design by <a title="Styleshout" href="http://www.styleshout.com/">Styleshout</a>.</p>
+
+		</div> <!-- End row -->
+
+		<div id="go-top"><a class="smoothscroll" title="Back to Top" href="#top"><i class="fa fa-chevron-up"></i></a></div>
+
+	</footer> <!-- End Footer-->
+	<!-- Java Script
+	================================================== -->
+	@Scripts.Render("~/bundles/js")
+	@RenderSection("script", false)
+
+</body>
+
+</html>

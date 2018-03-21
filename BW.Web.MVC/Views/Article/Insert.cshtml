@@ -2,28 +2,26 @@
 @using Microsoft.AspNet.Identity
 @{
 	ViewBag.Title = "Insert";
-	Layout = "~/Views/Shared/_MainLayout.cshtml";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="comments-area">
+<div>
 	<span class="text-danger">@Html.ValidationSummary()</span>
 	<h3><img src="~/images/r-blog.png" title="Makale Ekle">Makale Ekle</h3>
+	<span class="text-danger">@Html.ValidationSummary()</span>
 	@using (Html.BeginForm("Insert", "Article", FormMethod.Post))
 	{
 		@Html.AntiForgeryToken()
 		<p>
 			<label>Başlık</label>
-			<span>*</span>
 			@Html.TextBoxFor(x => x.Header)
 		</p>
 		<p>
 			<label>Kategori</label>
-			<span>*</span>
 			@Html.DropDownListFor(x => x.CategoryId, (List<SelectListItem>)ViewBag.kategorilist)
 		</p>
 		<p>
 			<label>İçerik</label>
-			<span>*</span>
 			@Html.TextAreaFor(x => x.Content)
 		</p>
 		<p>
@@ -34,7 +32,7 @@
 @section script{
 	<script src="~/Scripts/ckeditor/ckeditor.js"></script>
 	<script>
-        CKEDITOR.replace('Content22',
+        CKEDITOR.replace('Content',
             {
                 uiColor: '#3e59ad'
             });

@@ -17,7 +17,7 @@ namespace BW.Web.MVC.Controllers
     {
         // GET: Article
         [Route("{route}")]
-        public async Task<ActionResult> Index(int id, string route)
+        public async Task<ActionResult> Single(int id, string route)
         {
 
             try
@@ -31,8 +31,6 @@ namespace BW.Web.MVC.Controllers
                     Article = article,
                     Comments = comments
                 };
-                var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
-                ViewBag.popular = popular;
                 return View(model);
             }
             catch (Exception ex)
@@ -44,17 +42,7 @@ namespace BW.Web.MVC.Controllers
         [Authorize(Roles = "Admin,Editor,User")]
         public ActionResult Insert()
         {
-            var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
-            ViewBag.popular = popular;
-            var kategorilist = new List<SelectListItem>()
-            {
-                new SelectListItem()
-                {
-                    Text = "Kategori Seçiniz",
-                    Value = null
-                }
-
-            };
+            var kategorilist = new List<SelectListItem>();
             foreach (var category in new Repository.CategoryRepo().GetAll())
             {
                 kategorilist.Add(new SelectListItem()
@@ -66,10 +54,13 @@ namespace BW.Web.MVC.Controllers
             ViewBag.kategorilist = kategorilist;
             return View();
         }
-        [HttpPost]
+        [HttpPost, ValidateInput(false)]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Editor,User")]
         public async Task<ActionResult> Insert(ArticleViewModel model)
         {
+            if (!ModelState.IsValid)
+                return View(model);
             var userStore = NewUserStore();
             var userManager = new UserManager<ApplicationUser>(userStore);
             var user = await userManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
@@ -86,22 +77,22 @@ namespace BW.Web.MVC.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult GetByKeywords(string search)
+        public ActionResult GetByKeywords(string search, int page = 1)
         {
             try
             {
-                var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
-                ViewBag.popular = popular;
                 if (search == null)
                     return RedirectToAction("Index", "Home");
-                var model = new Repository.ArticleRepo()
+                var sonuc = new Repository.ArticleRepo()
                     .Queryable()
                     .Where(x => x.Header.Contains(search)
-                             || x.User.UserName.Contains(search)
-                             || x.User.Surname.Contains(search)
-                             || x.Content.Contains(search)
-                             || x.Category.CategoryName.Contains(search)).ToList();
-                if(model.Count==0)
+                                || x.User.UserName.Contains(search)
+                                || x.User.Surname.Contains(search)
+                                || x.Content.Contains(search)
+                                || x.Category.CategoryName.Contains(search)).ToList();                               
+                ViewBag.count = sonuc.Count();
+                var model = sonuc.Skip((page - 1) * 5).Take(5).ToList();
+                if (model.Count == 0)
                     return RedirectToAction("Index", "Home");
                 return View(model);
             }
@@ -111,13 +102,13 @@ namespace BW.Web.MVC.Controllers
             }
         }
         [Authorize(Roles = "Admin,Editor")]
-        public ActionResult ConfirmArticles()
+        public ActionResult ConfirmArticles(int page = 1)
         {
             try
             {
-                var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
-                ViewBag.popular = popular;
-                var model = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == false).OrderByDescending(x=>x.AddDate).ToList();
+                var pageSize = 5;
+                var model = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == false).OrderByDescending(x => x.AddDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                ViewBag.count = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == false).Count();
                 return View(model);
             }
             catch (Exception ex)
@@ -131,8 +122,6 @@ namespace BW.Web.MVC.Controllers
         {
             try
             {
-                var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
-                ViewBag.popular = popular;
                 var userStore = NewUserStore();
                 var userManager = new UserManager<ApplicationUser>(userStore);
                 var admin = await userManager.FindByIdAsync(HttpContext.User.Identity.GetUserId());
@@ -181,7 +170,7 @@ namespace BW.Web.MVC.Controllers
                     await new Repository.LikeRepo().InsertAsync(like);
                     article.LikeCount++;
                     await new Repository.ArticleRepo().UpdateAsync();
-                }             
+                }
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
@@ -212,6 +201,14 @@ namespace BW.Web.MVC.Controllers
                 ModelState.AddModelError("", ex.Message);
                 return RedirectToAction("Index", "Home");
             }
+        }
+
+        public ActionResult GetByCatId(int id, int page = 1)
+        {
+            var sonuc = new Repository.ArticleRepo().Queryable().Where(x => x.CategoryId == id).ToList();
+            ViewBag.Count = sonuc.Count;
+            var model = sonuc.Skip((page - 1) * 5).Take(5).ToList();
+            return View(model);
         }
     }
 }

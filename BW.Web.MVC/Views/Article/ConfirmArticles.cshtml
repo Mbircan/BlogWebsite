@@ -1,7 +1,7 @@
 ﻿@model List<BW.Models.Entities.Article>
 @{
 	ViewBag.Title = "ConfirmArticle";
-	Layout = "~/Views/Shared/_MainLayout.cshtml";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="wrap">
 	<div class="main">
@@ -16,7 +16,7 @@
 					<h3><a href="@Url.Action("Index", "Article", new {id = item.ArticleId})">@item.Header</a></h3>
 					<span>Yazar: @item.User.Name @item.User.Surname</span>
 					<div class="data">
-						<p>@item.Content</p>
+						<p>@Html.Raw(item.Content)</p>
 						<a class="btn btn-success" href="@Url.Action("ConfirmArticle", "Article", new {id = item.ArticleId})">Onayla</a>
 						<a class="btn btn-danger" href="@Url.Action("Delete", "Article", new {id = item.ArticleId})">Sil</a>
 					</div>
@@ -27,7 +27,19 @@
 		<div class="clear"></div>
 	</div>
 </div>
-
+@if (ViewBag.count != null)
+{
+	<div class="pagenav">
+		<p>
+			<ul class="page-numbers">
+				@for (int i = 1; i <= (ViewBag.count / 5) + 1; i++)
+				{
+					<li style="display: inline"><a href="@Url.Action("ConfirmArticles","Article",new{page=i})">@i</a></li>
+				}
+			</ul>
+		</p>
+	</div>
+}
 
 
 

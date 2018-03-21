@@ -20,8 +20,6 @@ namespace BW.Web.MVC.Controllers
         // GET: Account
         public ActionResult Register()
         {
-            var popular = new Repository.ArticleRepo().Queryable().Where(x => x.Confirmed == true).OrderByDescending(x => x.LikeCount).Take(5).ToList();
-            ViewBag.popular = popular;
             return View();
         }
         [HttpPost]
@@ -310,14 +308,12 @@ namespace BW.Web.MVC.Controllers
         {
             try
             {
-                var popular = new Repository.ArticleRepo().Queryable().OrderByDescending(x => x.Likes).ToList();
-                ViewBag.popular = popular;
                 var userStore = MembershipTools.NewUserStore();
                 var userManager = new UserManager<ApplicationUser>(userStore);
                 var user = await userManager.FindByIdAsync(id);
-                await userStore.Context.SaveChangesAsync();
                 await userManager.RemoveFromRoleAsync(user.Id, "User");
                 await userManager.AddToRoleAsync(user.Id, "Editor");
+                await userStore.Context.SaveChangesAsync();
                 return RedirectToAction("EditUsers", "Account");
             }
             catch (Exception ex)

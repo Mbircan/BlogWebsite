@@ -1,46 +1,90 @@
-﻿
-@model List<BW.Models.Entities.Article>
+﻿@model List<BW.Models.Entities.Article>
+@using BW.BLL.Account
+@using BW.BLL.Repository
+@using BW.Models.IdentityModels
+@using Microsoft.AspNet.Identity
+@{
+	var userStore = MembershipTools.NewUserStore();
+	var userManager = new UserManager<ApplicationUser>(userStore);
+	var user = userManager.FindById(HttpContext.Current.User.Identity.GetUserId());
+	var currentRole = "Passive";
+	if (user != null)
+	{
+
+		currentRole = userManager.GetRoles(user.Id).FirstOrDefault();
+	}
+}
 @{
 	ViewBag.Title = "Index";
-	Layout = "~/Views/Shared/_MainLayout.cshtml";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="wrap">
-	<div class="main">
-		<div class="content">
-			@foreach (var item in Model)
-			{
-				<div class="box1">
-					<h3><a href="@Url.Action("Index","Article",new {id=item.ArticleId})">@item.Header</a></h3>
-					<span>Yazar: @item.Author<span class="likes">@item.Likes</span></span>
-					<div class="data">
-						<p>@item.Content</p>
-						<span><a href="@Url.Action("Index","Article",new {id=item.ArticleId})">Devamını Oku>>></a></span>
-					</div>
-					<div class="clear"></div>
-				</div>
-			}
-			<div class="page_links">
-				<div class="next_button">
-					<a href="#">İleri</a>
-				</div>
-				<div class="page_numbers">
-					<ul>
-						<li><a href="#">1</a>
-						<li class="active"><a href="#">2</a>
-						<li><a href="#">3</a>
-						<li><a href="#">4</a>
-						<li><a href="#">5</a>
-						<li><a href="#">6</a>
-						<li><a href="#">... İleri</a>
-					</ul>
-				</div>
-				<div class="clear"></div>
-				<div class="page_bottom">
-					<p>Geri Git: <a href="#">Yukarı</a> | <a href="#">Ana Sayfa</a></p>
-				</div>
+@foreach (var item in Model)
+{
+	<article class="entry">
+		<header class="entry-header">
+			<h2 class="entry-title">
+				<a href="@Url.Action("Single","Article",new {id=item.ArticleId,route=item.Header.Replace(' ','-')})" title="">@item.Header</a>
+			</h2>
+			<div class="entry-meta">
+				<ul>
+					<li>@item.AddDate</li>
+					<span class="meta-sep">&bull;</span>
+					<li><a href="#" title="" rel="category tag">@item.Category.CategoryName</a></li>
+					<span class="meta-sep">&bull;</span>
+					<li>@item.User.UserName @item.User.Surname</li>
+				</ul>
 			</div>
+		</header>
+		<div class="entry-content">
+			@if (item.Content.Length < 500)
+			{
+				<p>@Html.Raw(item.Content)</p>
+			}
+			else
+			{
+				<p>@Html.Raw(item.Content.Substring(0, 500))<span>...<a class="btn btn-primary btn-xs" href="@Url.Action("Single","Article",new{id=item.ArticleId,route=item.Header.Replace(' ','-')})">Devamını Oku</a></span></p>
+
+			}
 		</div>
-		<div class="clear"></div>
+	</article>
+	if (user != null)
+	{
+		<div id="social">
+			<span><i class="fa fa-thumbs-up">@item.LikeCount</i></span>
+			@if (new Repository.LikeRepo().Queryable().Where(x => x.ArticleId == item.ArticleId && x.UserId == user.Id).Any())
+			{
+				<a href="@Url.Action("Dislike", "Article", new {id = item.ArticleId, uid = user.Id})" class="btn btn-sm btn-danger">Beğenmekten Vazgeç</a>
+			}
+			else
+			{
+				<a href="@Url.Action("Like", "Article", new {id = item.ArticleId, uid = user.Id})" class="btn btn-sm btn-success">Beğen</a>
+			}
+			<a href="http://twitter.com/share?url=<URL>&text=@(item.Content)&via=mbircan9" target="_blank" class="share-btn twitter">
+				<i class="fa fa-twitter fa-2x"></i>
+			</a>
+			<!-- Google Plus -->
+			<a href="https://plus.google.com/share?url=<BTN>" target="_blank" class="share-btn google-plus">
+				<i class="fa fa-google-plus fa-2x"></i>
+			</a>
+
+			<!-- Facebook -->
+			<a href="http://www.facebook.com/sharer/sharer.php?u=<URL>" target="_blank" class="share-btn facebook">
+				<i class="fa fa-facebook fa-2x"></i>
+			</a>
+		</div>
+	}
+}
+@if (ViewBag.count != null)
+{
+	<div class="pagenav">
+		<p>
+			<ul class="page-numbers">
+				@for (int i = 1; i <= (ViewBag.count / 5) + 1; i++)
+				{
+					<li style="display: inline"><a href="@Url.Action("Index","Home",new{page=i})">@i</a></li>
+				}
+			</ul>
+		</p>
 	</div>
-</div>
+}
 

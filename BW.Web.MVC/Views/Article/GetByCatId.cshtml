@@ -1,0 +1,39 @@
+﻿@model List<BW.Models.Entities.Article>
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@foreach (var item in Model)
+{
+	<article class="entry">
+		<header class="entry-header">
+			<h2 class="entry-title">
+				<a href="@Url.Action("Index","Article",new {id=item.ArticleId,route=item.Header.Replace(' ','-')})" title="">@item.Header</a>
+			</h2>
+			<div class="entry-meta">
+				<ul>
+					<li>@item.AddDate</li>
+					<span class="meta-sep">&bull;</span>
+					<li><a href="#" title="" rel="category tag">@item.Category.CategoryName</a></li>
+					<span class="meta-sep">&bull;</span>
+					<li>@item.User.UserName @item.User.Surname</li>
+				</ul>
+			</div>
+		</header>
+		<div class="entry-content">
+			<p>@Html.Raw(item.Content)</p>
+		</div>
+	</article>
+}
+@if (ViewBag.count != null)
+{
+	<div class="pagenav">
+		<p>
+			<ul class="page-numbers">
+				@for (int i = 1; i <= (ViewBag.count / 5) + 1; i++)
+				{
+					<li style="display: inline"><a href="@Url.Action("GetByCatId","Article",new{page=i})">@i</a></li>
+				}
+			</ul>
+		</p>
+	</div>
+}

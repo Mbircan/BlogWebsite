@@ -11,7 +11,9 @@ namespace BW.Models.Entities
 {
     public class Article
     {
+        [Required]
         public string Content { get; set; }
+        [Required]
         public string Header { get; set; }
         [Key]
         public int ArticleId { get; set; }

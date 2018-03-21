@@ -12,5 +12,6 @@ namespace BW.Models.ViewModels
         public Article Article { get; set; }
         public List<Comment> Comments { get; set; }
         public Comment NewComment { get; set; }
+        public string CommenterId { get; set; }
     }
 }
